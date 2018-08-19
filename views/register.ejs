@@ -1,0 +1,21 @@
+<% include partials/top %>
+    <% include partials/nav  %>
+        <div class="container">
+            <div class="row">
+                <h1 style="text-align: center">Sign up</h1>
+                <div style="width: 30%; margin: 40px auto">
+                    <form class="text-center" action="/register" method="POST">
+                        <div class="form-group">
+                            <label for="UserName">Enter Username/Email</label>
+                            <input type="text" class="form-control" name="username" id="UserName" placeholder="Username">
+                        </div>
+                        <div class="form-group">
+                            <label for="pass">Enter Password</label>
+                            <input type="password" class="form-control" id="pass" name="password" placeholder="Password">
+                        </div>
+                        <button type="submit" class="btn btn-lg btn-success">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <% include partials/bot %>
