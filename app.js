@@ -19,22 +19,20 @@ let campRoutes = require("./routes/camp"),
 
 
 // seedDB();
-//mongoose.connect("mongodb://localhost/camp_now");
-mongoose.connect("mongodb://campnow:qwerty121@ds020938.mlab.com:20938/campnow");
+mongoose.connect("mongodb://localhost/camp_now");
+//mongoose.connect("mongodb://campnow:qwerty121@ds020938.mlab.com:20938/campnow");
 app.use(bodyParser.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"));
 app.use(methodOverride("_method"));
-app.set("view engine", "ejs");
-
+app.use(flash());
 
 // ============ PASSPORT SETUP ==============
 app.use(require("express-session")({
-    secret: "this is the secret code",
+    secret: "babayaga",
     resave: false,
     saveUninitialized: false
 }));
-
-app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 passport.use(new LocalStrategy(User.authenticate()));
@@ -48,9 +46,9 @@ app.use(function (req, res, next) {
     next();
 });
 
+app.use("/", authRoutes);
 app.use("/campgrounds", campRoutes);
 app.use("/campgrounds/:id/comments", commentRoutes);
-app.use("/", authRoutes);
 
 
 app.listen(process.env.PORT || 8080, function () {

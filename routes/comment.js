@@ -23,11 +23,11 @@ router.get("/new", middleware.isLoggedIn, function (req, res) {
 router.post("/", function (req, res) {
     Camp.findById(req.params.id, function (err, foundCamp) {
         if (err) {
-            req.flash("error", "Something went wrong");
             res.redirect("/campgrounds");
         } else {
             Comment.create(req.body.comment, function (err, comment) {
                 if (err) {
+                    req.flash("error", "Something went wrong");
                     console.log(err);
                 } else {
                     comment.author.id = req.user._id;
@@ -45,12 +45,18 @@ router.post("/", function (req, res) {
 
 // comments edit route
 router.get("/:comment_id/edit", middleware.checkCommentOwnership, function (req, res) {
-    Comment.findById(req.params.comment_id, function (err, foundComment) {
-        if (err) {
-            res.redirect("/campgrounds");
-        } else {
-            res.render("comments/edit", { campground_id: req.params.id, comment: foundComment });
+    Camp.findById(req.params.id, function (err, foundCamp) {
+        if (err || !foundCamp) {
+            req.flash("error", "No camp found");
+            return res.redirect("back");
         }
+        Comment.findById(req.params.comment_id, function (err, foundComment) {
+            if (err) {
+                res.redirect("/campgrounds");
+            } else {
+                res.render("comments/edit", { campground_id: req.params.id, comment: foundComment });
+            }
+        });
     });
 });
 
@@ -68,10 +74,11 @@ router.put("/:comment_id", middleware.checkCommentOwnership, function (req, res)
 // comment Destroy Route
 router.delete("/:comment_id", middleware.checkCommentOwnership, function (req, res) {
     Comment.findByIdAndRemove(req.params.comment_id, function (err) {
-        if(err) {
+        if (err) {
             res.redirect("back");
             console.log(err);
         } else {
+            req.flash("success", "Comment Deleted");
             res.redirect("/campgrounds/" + req.params.id);
         }
     });

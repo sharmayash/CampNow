@@ -19,13 +19,14 @@ router.get("/", function (req, res) {
 
 router.post("/", middleware.isLoggedIn, function (req, res) {
     let name = req.body.name;
+    let price = req.body.price;
     let img = req.body.image;
     let desc = req.body.desc;
     let author = {
         id: req.user._id,
         username: req.user.username
     };
-    let newCamp = { name: name, image: img, desc: desc, author: author };
+    let newCamp = { name: name, price: price, image: img, desc: desc, author: author };
     Camp.create(newCamp, function (err, newlyCamp) {
         if (err) {
             console.log(err);
@@ -45,7 +46,8 @@ router.get("/new", middleware.isLoggedIn, function (req, res) {
 
 router.get("/:id", function (req, res) {
     Camp.findById(req.params.id).populate("comments").exec(function (err, campFounded) {
-        if (err) {
+        if (err || !campFounded) {
+            req.flash('error', 'Camp not exists');
             console.log(err);
         } else {
             res.render("camps/show", { campground: campFounded });
